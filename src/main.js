@@ -3,6 +3,7 @@ import App from './App.vue'
 import store from './store'
 import router from './router'
 const fb = require('../firebaseConfig.js')
+import './assets/scss/app.scss'
 
 Vue.config.productionTip = false
 
@@ -17,4 +18,4 @@ fb.auth.onAuthStateChanged(() => {
             render: h => h(App)
         })
     }
-}).$mount('#app')
+})
