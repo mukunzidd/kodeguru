@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Login from './views/Login.vue'
-import Register from './views/Register.vue'
-import Profile from './views/Profile.vue'
-import CreatePost from './views/CreatePost.vue'
+import Home from './views/Home'
+import Login from './views/Login'
+import Register from './views/Register'
+import Profile from './views/Profile'
+import CreatePost from './views/CreatePost'
+import firebase from 'firebase'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
+  mode: 'history',
   routes: [
+    {
+      path: '*',
+      redirect: '/'
+    },
     {
       path: '/',
       name: 'home',
@@ -28,12 +34,34 @@ export default new Router({
     {
       path: '/profile',
       name: 'profile',
-      component: Profile
+      component: Profile,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/new',
       name: 'new',
-      component: CreatePost
+      component: CreatePost,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 })
+
+// Guards
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
+  const currentUser = firebase.auth().currentUser
+
+  if (requiresAuth && !currentUser) {
+      next('/login')
+  } else if (requiresAuth && currentUser) {
+      next()
+  } else {
+      next()
+  }
+})
+
+export default router
