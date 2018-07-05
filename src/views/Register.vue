@@ -18,8 +18,9 @@
                     <br>
                     <button @click="signup" class="button">Register</button>
                     <transition name="fade">
-                        <div v-if="signingUp" class="loading">
-                            <p>Signing You Up...</p>
+                        <div  class="loading">
+                            <p v-if="signingUp">Loading...</p>
+                            <p v-if="signUpError">Error Registering You: {{ signUpError }}</p>
                         </div>
                     </transition>
 
@@ -43,18 +44,30 @@
                     email: '',
                     password: ''
                 },
-                signingUp: false
+                signingUp: false,
+                signUpError: ''
             }
         },
         methods: {
             signup() {
-                this.signingUp = true;
-                fb.auth.createUserWithEmailAndPassword(this.signupForm.email, this.signupForm.password)
-                    .then(res => {
+                fb.auth.createUserWithEmailAndPassword(this.signupForm.email, this.signupForm.password).then(user => {
+                    this.$store.commit('setCurrentUser', user.user)
+
+                    // create user obj
+                    fb.usersCollection.doc(user.user.uid).set({
+                        name: this.signupForm.name
+                    }).then(() => {
+                        this.$store.dispatch('fetchUserProfile')
                         this.$router.push('/home')
+                    }).catch(err => {
+                        console.log(err)
                     })
-                }
+                }).catch(err => {
+                    this.signUpError = err.message
+                    console.log(err)
+                })
             }
+        }
     }
 </script>
 

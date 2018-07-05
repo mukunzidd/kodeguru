@@ -16,7 +16,7 @@
   // firebase utils
   const db = firebase.firestore()
   const auth = firebase.auth()
-  const currentUser = auth.currentUser
+  const currentUser = firebase.auth().currentUser
   
   // date issue fix according to firebase
   const settings = {

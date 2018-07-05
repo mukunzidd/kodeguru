@@ -11,15 +11,21 @@ export default new Vuex.Store({
     userProfile: {},
   },
   actions: {
+    clearData({commit}){
+      commit('setCurrentUser', null),
+      commit('setUserProfile', {})
+    },
     fetchUserProfile({ commit, state }) {
       fb.usersCollection.doc(state.currentUser.uid).get().then(res => {
-        commit('setUserProfile', res.data())
-      }).catch()
+          commit('setUserProfile', res.data())
+      }).catch(err => {
+          console.log(err)
+      })
     }
   },
   mutations: {
-    setCurrentUser(state, val) {
-      state.currentUser = val
+    setCurrentUser(state, user) {
+      state.currentUser = user
     },
     setUserProfile(state, val) {
         state.userProfile = val

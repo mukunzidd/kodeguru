@@ -18,8 +18,9 @@
                     <button @click="login" class="button">Log In</button>
                 
                     <transition name="fade">
-                        <div v-if="signingIn" class="loading">
-                            <p>Loading...</p>
+                        <div  class="loading">
+                            <p v-if="signingIn">Loading...</p>
+                            <p v-if="signInError">{{ signInError }}</p>
                         </div>
                     </transition>
 
@@ -42,7 +43,8 @@
                     email: '',
                     password: ''
                 },
-                signingIn: false
+                signingIn: false,
+                signInError: ''
             }
         },
         methods: {
@@ -51,11 +53,11 @@
                 fb.auth.signInWithEmailAndPassword(this.loginForm.email, this.loginForm.password).then(user => {
                     this.$store.commit('setCurrentUser', user.user)
                     this.$store.dispatch('fetchUserProfile')
+                    this.performingRequest = false
                     this.$router.push('/home')
-                    this.signingIn = false;
                 }).catch(err => {
-                    this.signingIn = false;
-                    console.log('Login Failed: ', err)
+                    console.log(err)
+                    this.signInError = err.message
                 })
             }
         }
